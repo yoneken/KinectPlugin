@@ -1,0 +1,12 @@
+
+CXXFLAGS += `pkg-config --cflags choreonoid`
+PLUGIN = libCnoidKinectPlugin.so
+SRC = KinectPlugin.o KinectView.o KinectImpl.o
+
+$(PLUGIN): $(SRC)
+	g++ -shared `pkg-config --libs choreonoid` -o $(PLUGIN) $(SRC)
+
+install: $(PLUGIN)
+	install -s $(PLUGIN) `pkg-config --variable=plugindir choreonoid`
+clean:
+	rm -f *.o *.so
