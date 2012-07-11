@@ -10,24 +10,17 @@
 
 #ifdef USE_KINECT_SDK
 #pragma comment(lib, "Kinect10.lib")
-#endif /* USE_KINECT_SEK */
+#endif /* USE_KINECT_SDK */
 
 #define STDERR(str) cnoid::MessageView::mainInstance()->putln(str)
 //#define STDERR(str) OutputDebugString(L##str)
 //#define STDERR(str) 
 
+const float KinectImpl::Colors[][3] ={{1,1,1},{0,1,1},{0,0,1},{0,1,0},{1,1,0},{1,0,0},{1,.5,0}};	// Order is Blue-Green-Red
+
 KinectImpl::KinectImpl(void)
 	:trackedDataIndex(0), tracked(false)
 {
-	for(int i=0;i<TEXTURE_NUM;i++){
-		glGenTextures(1, &bg_texture[i]);
-		glBindTexture(GL_TEXTURE_2D, bg_texture[i]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	}
 }
 
 
@@ -137,31 +130,34 @@ void KinectImpl::close(void)
 	pNuiSensor = NULL;
 }
 
+void KinectImpl::initializeGL(void)
+{
+	for(int i=0;i<TEXTURE_NUM;i++){
+		glGenTextures(1, &bg_texture[i]);
+		glBindTexture(GL_TEXTURE_2D, bg_texture[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	}
+}
+
 void KinectImpl::drawTexture(int width, int height, TEXTURE_INDEX index)
 {
-	GLfloat tex_width, tex_height;
-	switch(index){
-		case DEPTH_TEXTURE:
-			tex_width = 320.0f;
-			tex_height = 240.0f;
-			break;
-		default:
-			tex_width = 640.0f;
-			tex_height = 480.0f;
-	}
-
 	short vertices[] = {
-		0,	  0,
-		width,	  0,
-		0,	height,
-		width,	height,
+		-1,	-1,
+		 1,	-1,
+		-1,	 1,
+		 1,	 1,
 	};
 	GLfloat texCoords[] = {
-		(GLfloat)width/tex_width,	(GLfloat)height/tex_height,
-		0.0f,	(GLfloat)height/tex_height,
-		(GLfloat)width/tex_width,	0.0f,
-		0.0f,	0.0f,
+		1.0f,	1.0f,
+		0.0f,	1.0f,
+		1.0f,	0.0f,
+		0.0f,	0.0f
 	};
+	glDisable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 	glShadeModel(GL_FLAT);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -208,9 +204,8 @@ void KinectImpl::storeNuiDepth(void)
 
 		unsigned short *p = (unsigned short *)pBuffer;
 		for(int i=0;i<pTexture->BufferLen()/2;i++){
-			*p = (unsigned short)((*p & 0xff00)>>8) | ((*p & 0x00ff)<<8);
-			//*p = (unsigned short)((*p & 0xfff8)>>3);
-			//*p = (unsigned short)(NuiDepthPixelToDepth(*pBuffer));
+			//*p = (unsigned short)((*p & 0xff00)>>8) | ((*p & 0x00ff)<<8);	// for check
+			*p = NuiDepthPixelToDepth(*p);
 			p++;
 		}
 		glBindTexture(GL_TEXTURE_2D, bg_texture[DEPTH_TEXTURE]);

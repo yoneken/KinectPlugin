@@ -14,7 +14,7 @@ using namespace cnoid;
 
 
 KinectScene::KinectScene(QWidget* parent)
-    : QGLWidget(parent), pKinectImpl(new KinectImpl())
+    : QGLWidget(parent), tex_num(0), pKinectImpl(new KinectImpl())
 {
 	pKinectImpl->open();
 }
@@ -27,6 +27,7 @@ KinectScene::~KinectScene(void)
 void KinectScene::initializeGL()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	pKinectImpl->initializeGL();
 
 	connect( &timer, SIGNAL(timeout()), this, SLOT(idle()) );
 	if(!timer.isActive()){
@@ -45,16 +46,24 @@ void KinectScene::resizeGL(int width, int height)
 
 void KinectScene::paintGL()
 {
-	//glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, display_width, display_height);
-	gluOrtho2D(0.0, display_width, 0.0, display_height);
+	gluOrtho2D(0.0, (double)display_width, 0.0, (double)display_height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	pKinectImpl->drawTexture(display_width, display_height, KinectImpl::IMAGE_TEXTURE);
+	pKinectImpl->drawTexture(display_width, display_height, (KinectImpl::TEXTURE_INDEX)tex_num);
+}
+
+void KinectScene::mousePressEvent(QMouseEvent *event)
+{
+	if(tex_num == KinectImpl::IMAGE_TEXTURE){
+		tex_num = KinectImpl::DEPTH_TEXTURE;
+	}else{
+		tex_num = KinectImpl::IMAGE_TEXTURE;
+	}
 }
 
 void KinectScene::idle()

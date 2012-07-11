@@ -14,11 +14,13 @@
 #ifdef USE_KINECT_SDK
 #include <ole2.h>
 #include <NuiApi.h>
-#endif /* USE_KINECT_SEK */
+#endif /* USE_KINECT_SDK */
 
 class KinectImpl
 {
 public:
+	const static float Colors[][3];
+
 	KinectImpl(void);
 	~KinectImpl(void);
 
@@ -31,6 +33,7 @@ public:
 		TEXTURE_NUM,
 	} TEXTURE_INDEX;
 
+	void initializeGL(void);
 	void drawTexture(int width, int height, TEXTURE_INDEX index);
 	void storeNuiDepth(void);
 	void storeNuiImage(void);

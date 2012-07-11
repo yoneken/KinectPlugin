@@ -22,9 +22,11 @@ public:
 
 protected:
 	QTimer timer;
+	int tex_num;
     virtual void initializeGL();
     virtual void resizeGL(int width, int height);
     virtual void paintGL();
+	virtual void mousePressEvent(QMouseEvent *event);
     
 protected Q_SLOTS:
 	virtual void idle();
