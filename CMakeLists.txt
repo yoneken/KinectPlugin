@@ -1,9 +1,9 @@
-# @author Kenta Yonekura (Tsukuba Univ./AIST)
+# @author Kenta Yonekura (yoneken)
 
 if(MSVC)
 	option(BUILD_KINECT_PLUGIN "Building a Kinect plugin" OFF)
-	set(sources KinectPlugin.cpp KinectView.cpp KinectImpl.cpp)
-	set(headers KinectView.h KinectImpl.h)
+	set(sources KinectPlugin.cpp KinectView.cpp KinectImpl.cpp FaceTracker.cpp)
+	set(headers KinectView.h KinectImpl.h FaceTracker.h)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR} $ENV{KINECTSDK10_DIR}/inc $ENV{FTSDK_DIR}inc)
 
 	if(BUILD_KINECT_PLUGIN)

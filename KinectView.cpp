@@ -1,7 +1,7 @@
 /*
   KinectView.cpp
   This is a sample program to use Kinect(TM) via Choreonoid.
-  Author: Kenta Yonekura (Tsukuba Univ./AIST)
+  Author: Kenta Yonekura (yoneken)
 */  
 
 #include "KinectView.h"
@@ -55,6 +55,7 @@ void KinectScene::paintGL()
 	glLoadIdentity();
 	
 	pKinectImpl->drawTexture(display_width, display_height, (KinectImpl::TEXTURE_INDEX)tex_num);
+	pKinectImpl->drawNuiSkeleton(display_width, display_height, pKinectImpl->getTrackedDataIndex());
 }
 
 void KinectScene::mousePressEvent(QMouseEvent *event)
@@ -70,6 +71,7 @@ void KinectScene::idle()
 {
 	pKinectImpl->storeNuiImage();
 	pKinectImpl->storeNuiDepth();
+	pKinectImpl->storeNuiSkeleton();
 	update();
 }
 

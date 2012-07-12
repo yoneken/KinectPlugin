@@ -1,7 +1,7 @@
 /*
   KinectImpl.h
   This is a sample program to use Kinect(TM) via Choreonoid.
-  Author: Kenta Yonekura (Tsukuba Univ./AIST)
+  Author: Kenta Yonekura (yoneken)
 */  
 
 #ifndef __KINECTIMPL_H__
@@ -24,8 +24,8 @@ public:
 	KinectImpl(void);
 	~KinectImpl(void);
 
-	bool open(void);
-	void close(void);
+	virtual bool open(void);
+	virtual void close(void);
 
 	typedef enum _TEXTURE_INDEX{
 		IMAGE_TEXTURE = 0,
@@ -33,13 +33,29 @@ public:
 		TEXTURE_NUM,
 	} TEXTURE_INDEX;
 
-	void initializeGL(void);
-	void drawTexture(int width, int height, TEXTURE_INDEX index);
-	void storeNuiDepth(void);
-	void storeNuiImage(void);
+	virtual void initializeGL(void);
+	virtual void drawTexture(int width, int height, TEXTURE_INDEX index);
+	virtual void storeNuiDepth(void);
+	virtual void storeNuiImage(void);
+	virtual void storeNuiSkeleton(void);
+	virtual void drawNuiSkeleton(int width, int height, int playerID);
+
+	virtual void glDrawArrowd(double, double, double, double, double, double);
+	virtual void drawHeadOrientation(int);
+
+	virtual void setShowedTextureIndex(TEXTURE_INDEX index) { showedTextureIndex = index; }
+	virtual int getShowedTextureIndex(void){ return showedTextureIndex; }
+	virtual int getTrackedDataIndex(void){ return trackedDataIndex; };
+#if defined(USE_AUDIO)
+	virtual void initAudio(void);
+	virtual void clearAudio(void);
+	virtual void storeNuiAudio(void);
+	virtual void drawSoundSource(int playerID);
+#endif
 
 protected:
 	unsigned int bg_texture[TEXTURE_NUM];
+	TEXTURE_INDEX showedTextureIndex;
 	int trackedDataIndex;
 	bool tracked;
 	unsigned short depth[240][320];

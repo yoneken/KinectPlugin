@@ -1,7 +1,7 @@
 /*
   KinectView.h
   This is a sample program to use Kinect(TM) via Choreonoid.
-  Author: Kenta Yonekura (Tsukuba Univ./AIST)
+  Author: Kenta Yonekura (yoneken)
 */  
 
 #ifndef __KINECTVIEW_H__
